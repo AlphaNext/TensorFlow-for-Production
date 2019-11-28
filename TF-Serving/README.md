@@ -2,10 +2,8 @@
 
 ## **Please Note: the tensorflow (or tf-serving) version used in training model, converting model and serving client should be same.**
 
--------------------
-
 ## **Tutorial**
-### 0. intall tf serving from source, see **Install_from_Source.md**
+### 0. intall tf serving from source, see ---> ***[Install_from_Source.md](Install_from_Source.md)***
 ### 1. Prerequisites:  
 
 Train your model with Keras or Tensorflow, for example, we pick a edge detection model to show that how to deploy your model to production using TF Serving.
@@ -37,13 +35,13 @@ Using TensorFlow backend.
 -------------------
 ### 2. Convert model and set up serving:
 
-* (1)  convert hdf5 or h5 file to pb model format file, **keras_to_tensorflow.py**
+* (1)  convert hdf5 or h5 file to pb model format file,  see ---> ***[keras_to_tensorflow.py](keras_to_tensorflow.py)***, or ***[Github: keras_to_tensorflow.py](https://github.com/amir-abdi/keras_to_tensorflow/blob/master/keras_to_tensorflow.py)***
 
 ```   
 python keras_to_tensorflow.py -input_model 'model.h5' -output_model 'model.pb'  -output_meta_ckpt=True 
 ```   
 
-* (2) preprocess pb model with byte stream format images, **saved_model.py**
+* (2) preprocess pb model with byte stream format images, see ---> ***[saved_model.py](saved_model.py)***
 
 ```
 # Subtracts the given means from each image channel.
@@ -56,13 +54,13 @@ def load_merge_graph(frozen_graph_filename):
 
 ```
 
-* (3) convert pb model to saved_model used in tf serving, **saved_model.py**
+* (3) convert pb model to saved_model used in tf serving, see  ---> ***[saved_model.py](saved_model.py)***
 
 ```
 def export_savedmodel(pb_path, checkpoint_path):
 ```
 
-* (4) set up your model serving, **start_serving.sh**
+* (4) set up your model serving, see  ---> ***[start_serving.sh](start_serving.sh)***
 
 ```
 #!/bin/bash
@@ -76,23 +74,23 @@ $TF_SERVING_HOME/tensorflow_serving/model_servers/tensorflow_model_server --port
         --model_name=edge \
         --model_base_path=$SERVING_MODEL_HOME
 ```
-* (5) test your serving using simple python client, **py_client.py**
+* (5) test your serving using simple python client, see  ---> ***[py_client.py](py_client.py)***
 
 * (6) input ***Lenna*** image and it's result edge image   
 
-<figure class="half">
-    <img src="Lenna.png" width="400">
-    <img src="edge.jpg" width="400">
-</figure>
+<p align="middle">
+  <img src="Lenna.png" width="400" />
+  <img src="edge.jpg" width="400" /> 
+</p>
 
-## Some error when learning tf serving, see more in file ***Error_list.md***
+### 3. Some error when learning tf serving, see ---> ***[Error_list.md](Error_list.md)***
 
 -------------------
 ## **Reference code link**
 * [holy-edge(tensorflow)](https://github.com/moabitcoin/holy-edge)
 * [Keras-HED-with-model](https://github.com/senliuy/Keras_HED_with_model)
 * [Keras HED for training](https://github.com/lc82111/Keras_HED)
-
+* [keras_to_tensorflow](https://github.com/amir-abdi/keras_to_tensorflow)
 -------------------
 * [**==Deploying Object Detection Model with TensorFlow Serving — Part 1==**](https://medium.com/innovation-machine/deploying-object-detection-model-with-tensorflow-serving-7f12ee59b036)
 * [**==Deploying Object Detection Model with TensorFlow Serving — Part 2==**](https://medium.com/innovation-machine/deploying-object-detection-model-with-tensorflow-serving-part-2-55e6c638822e)
@@ -127,7 +125,7 @@ $TF_SERVING_HOME/tensorflow_serving/model_servers/tensorflow_model_server --port
 ## **TensorFlow version**
 ### Linux, [Tested build configurations](https://tensorflow.google.cn/install/source)
 Version	|Python version	|Compiler	|Build tools	|cuDNN	|CUDA  
----|---|---|---|---|---|---|--- 
+---|---|---|---|---|---
 tensorflow-2.0.0|	2.7, 3.3-3.7	|GCC 7.3.1	|Bazel 0.26.1	|7.4	|10.0  
 tensorflow_gpu-1.14.0|	2.7, 3.3-3.7	|GCC 4.8	|Bazel 0.24.1	|7.4	|10.0  
 tensorflow_gpu-1.13.1|	2.7, 3.3-3.7	|GCC 4.8	|Bazel 0.19.2	|7.4	|10.0  
