@@ -230,3 +230,11 @@ grpc._channel._Rendezvous: <_Rendezvous of RPC that terminated with:
 	details = "failed to connect to all addresses"
 	debug_error_string = "{"created":"@1574942452.038365732","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3818,"referenced_errors":[{"created":"@1574942452.038357275","description":"failed to connect to all addresses","file":"src/core/ext/filters/client_channel/lb_policy/pick_first/pick_first.cc","file_line":395,"grpc_status":14}]}"
 ```
+
+* (15) **url writing form error** example: should replace https://xx.xxx.xxx.xxx:5001 (:frowning_face:)  by xx.xxx.xxx.xxx:5001 (:grinning:)
+```
+grpc._channel._Rendezvous: <_Rendezvous of RPC that terminated with:
+        status = StatusCode.UNAVAILABLE
+        details = "Name resolution failure"
+        debug_error_string = "{"created":"@1577698071.277316602","description":"Failed to create subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":2267,"referenced_errors":[{"created":"@1577698071.277310755","description":"Name resolution failure","file":"src/core/ext/filters/client_channel/request_routing.cc","file_line":166,"grpc_status":14}]}"
+```
