@@ -222,7 +222,7 @@ tatus = StatusCode.INVALID_ARGUMENT
 	debug_error_string = "{"created":"@1574932547.518516747","description":"Error received from peer","file":"src/core/lib/surface/call.cc","file_line":1039,"grpc_message":"NodeDef mentions attr 'unit' not in Op<name=Substr; signature=input:string, pos:T, len:T -> output:string; attr=T:type,allowed=[DT_INT32, DT_INT64]>; NodeDef: {{node import/map/while/decode_image/Substr}} = Substr[T=DT_INT32, _output_shapes=[<unknown>], unit="BYTE", _device="/job:localhost/replica:0/task:0/device:CPU:0"](import/map/while/TensorArrayReadV3, import/map/while/decode_image/Substr/pos, import/map/while/decode_image/Substr/len). (Check whether your GraphDef-interpreting binary is up to date with your GraphDef-generating binary.).\n\t [[{{node import/map/while/decode_image/Substr}} = Substr[T=DT_INT32, _output_shapes=[<unknown>], unit="BYTE", _device="/job:localhost/replica:0/task:0/device:CPU:0"](import/map/while/TensorArrayReadV3, import/map/while/decode_image/Substr/pos, import/map/while/decode_image/Substr/len)]]","grpc_status":3}"
 ```
 
-* (14) **request port error** example
+* (14) **request port error** example, **should check your host address is right or not?**
 
 ```
 grpc._channel._Rendezvous: <_Rendezvous of RPC that terminated with:
@@ -237,4 +237,36 @@ grpc._channel._Rendezvous: <_Rendezvous of RPC that terminated with:
         status = StatusCode.UNAVAILABLE
         details = "Name resolution failure"
         debug_error_string = "{"created":"@1577698071.277316602","description":"Failed to create subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":2267,"referenced_errors":[{"created":"@1577698071.277310755","description":"Name resolution failure","file":"src/core/ext/filters/client_channel/request_routing.cc","file_line":166,"grpc_status":14}]}"
+```
+
+* (16) **[gRPC: Received message larger than max (32243844 vs. 4194304)" #1382](https://github.com/tensorflow/serving/issues/1382)** , because limit showing 4MB (4194304).
+```
+# https://github.com/tensorflow/serving/issues/1382#issuecomment-503384623
+# create the gRPC stub
+# options = [('grpc.max_message_length', 100 * 1024 * 1024)]          # is wrong
+options = [('grpc.max_receive_message_length', max_message_length)]    # right
+channel = grpc.insecure_channel(server_url, options = options)
+stub = prediction_service_pb2_grpc.PredictionServiceStub(channel)
+```
+* (17) **[details = "Servable not found for request: Latest(xxxx_model)](https://github.com/kubeflow/tf-operator/issues/552#issuecomment-383467986)"**  model_spec.name is wrong, check 
+```
+request = predict_pb2.PredictRequest()
+request.model_spec.name = 'edge'      # check this line
+request.model_spec.signature_name = 'serving_default'
+``` 
+
+* (18) **tf.contrib.util.make_tensor_proto input tensor shape is NxHxWxC, so please check your pb(or ckpt) model is channel first or channel last**
+```
+details = "input depth must be evenly divisible by filter depth: 800 vs 3
+```
+
+* (19) **please keep tf-serving version == tensorflow training code version**
+
+```
+grpc._channel._Rendezvous: <_Rendezvous of RPC that terminated with:
+	status = StatusCode.INVALID_ARGUMENT
+	details = "NodeDef mentions attr 'unit' not in Op<name=Substr; signature=input:string, pos:T, len:T -> output:string; attr=T:type,allowed=[DT_INT32, DT_INT64]>; NodeDef: {{node map/while/decode_image/Substr}} = Substr[T=DT_INT32, _output_shapes=[[]], unit="BYTE", _device="/job:localhost/replica:0/task:0/device:CPU:0"](map/while/TensorArrayReadV3, map/while/decode_image/Substr/pos, map/while/decode_image/Substr/len). (Check whether your GraphDef-interpreting binary is up to date with your GraphDef-generating binary.).
+	 [[{{node map/while/decode_image/Substr}} = Substr[T=DT_INT32, _output_shapes=[[]], unit="BYTE", _device="/job:localhost/replica:0/task:0/device:CPU:0"](map/while/TensorArrayReadV3, map/while/decode_image/Substr/pos, map/while/decode_image/Substr/len)]]"
+	debug_error_string = "{"created":"@1602998954.740251028","description":"Error received from peer","file":"src/core/lib/surface/call.cc","file_line":1039,"grpc_message":"NodeDef mentions attr 'unit' not in Op<name=Substr; signature=input:string, pos:T, len:T -> output:string; attr=T:type,allowed=[DT_INT32, DT_INT64]>; NodeDef: {{node map/while/decode_image/Substr}} = Substr[T=DT_INT32, _output_shapes=[[]], unit="BYTE", _device="/job:localhost/replica:0/task:0/device:CPU:0"](map/while/TensorArrayReadV3, map/while/decode_image/Substr/pos, map/while/decode_image/Substr/len). (Check whether your GraphDef-interpreting binary is up to date with your GraphDef-generating binary.).\n\t [[{{node map/while/decode_image/Substr}} = Substr[T=DT_INT32, _output_shapes=[[]], unit="BYTE", _device="/job:localhost/replica:0/task:0/device:CPU:0"](map/while/TensorArrayReadV3, map/while/decode_image/Substr/pos, map/while/decode_image/Substr/len)]]","grpc_status":3}"
+
 ```
